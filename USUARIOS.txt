@@ -1,0 +1,4 @@
+     Rol	Correo	                Contraseña
+👤 Cliente	   cliente@centaury.com	    cliente123
+👷 Empleado	   empleado@centaury.com	empleado123
+🔐 Admin	   admin@centaury.com	    admin123

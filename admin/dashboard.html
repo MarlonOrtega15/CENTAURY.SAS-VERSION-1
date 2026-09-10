@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador | Centaury S.A.S</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--negro:#1a1a1a;--naranja:#f39c12;--blanco:#fff;--gris:#f4f4f4;--verde:#27ae60;--rojo:#e74c3c;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--gris);color:var(--negro);}
+    .sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--negro);border-right:2px solid var(--naranja);display:flex;flex-direction:column;z-index:100;}
+    .sidebar-logo{padding:1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--blanco);letter-spacing:2px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .sidebar-logo span{color:var(--naranja);}
+    .sidebar-rol{padding:.75rem 1.5rem;background:rgba(243,156,18,.1);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);font-weight:600;}
+    .sidebar nav{padding:1rem 0;flex:1;}
+    .sidebar nav a{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;color:#aaa;font-size:.875rem;text-decoration:none;transition:.2s;cursor:pointer;}
+    .sidebar nav a:hover,.sidebar nav a.activo{background:rgba(243,156,18,.1);color:var(--naranja);}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);}
+    .btn-salir{width:100%;background:var(--rojo);color:var(--blanco);border:none;padding:.6rem;border-radius:4px;cursor:pointer;font-size:.8rem;font-weight:600;}
+    .main{margin-left:240px;padding:2rem;}
+    .topbar{background:var(--blanco);padding:1rem 1.5rem;border-radius:6px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;}
+    .badge{background:var(--naranja);color:var(--negro);padding:.25rem .75rem;border-radius:20px;font-size:.75rem;font-weight:700;}
+    
+    .seccion-admin { display: none; }
+    .seccion-admin.activa { display: block; }
+    .card-admin { background: var(--blanco); padding: 2rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 1.5rem; }
+    .card-admin h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4rem; margin-bottom: 1rem; color: var(--negro); }
+    
+    .mensaje-item { background: #f9f9f9; border-left: 4px solid var(--naranja); padding: 1.2rem; border-radius: 4px; margin-bottom: 1rem; }
+    .btn-responder { background: #27ae60; color: white; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .btn-eliminar { background: var(--rojo); color: white; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .contador-badge { background: var(--rojo); color: white; padding: 0.1rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+    
+    .form-admin-box { background: #fafafa; padding: 1.5rem; border: 1px solid #ddd; border-radius: 6px; margin-top: 1rem; display: none; }
+    .form-admin-box input, .form-admin-box select, .form-admin-box textarea { width: 100%; padding: 0.7rem; margin-top: 0.4rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 4px; font-family: 'Inter'; }
+    
+    .proyecto-item-card { background: #fafafa; border: 1px solid #e5e5e5; border-left: 5px solid var(--naranja); padding: 1.2rem; border-radius: 6px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+
+    #chatFlotante { position: fixed; bottom: 20px; right: 20px; width: 340px; background: white; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); border: 1px solid #ddd; z-index: 1000; display: none; flex-direction: column; overflow: hidden; }
+    .chat-header { background: var(--negro); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 700; }
+    .chat-header button { background: none; border: none; color: white; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
+    .chat-cuerpo { height: 220px; padding: 10px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; }
+    .chat-footer { padding: 10px; display: flex; gap: 5px; background: white; border-top: 1px solid #eee; }
+    .chat-footer input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+    .chat-footer button { background: var(--naranja); color: var(--negro); border: none; padding: 6px 12px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+    .msg-chat { padding: 6px 10px; border-radius: 6px; max-width: 80%; }
+    .msg-admin { background: #e1f5fe; align-self: flex-end; text-align: right; }
+    .msg-cliente { background: #e8f5e9; align-self: flex-start; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">CENT<span>AUR</span>Y</div>
+  <div class="sidebar-rol">🔐 Administrador Único</div>
+  <nav>
+    <a href="#" onclick="cambiarSeccionAdmin('proyectos', this)" class="activo">📂 Proyectos</a>
+    <a href="#" onclick="cambiarSeccionAdmin('usuarios', this)">👥 Usuarios & Roles</a>
+    <a href="#" onclick="cambiarSeccionAdmin('mensajes', this)">✉️ Mensajes <span id="badgeMensajes" class="contador-badge">0</span></a>
+    <a href="#" onclick="cambiarSeccionAdmin('solicitudes', this)">📋 Solicitudes & Información <span id="badgeSolicitudes" class="contador-badge">0</span></a>
+    <a href="#" onclick="cambiarSeccionAdmin('servicios', this)">⚙️ Servicios</a>
+    <a href="#" onclick="cambiarSeccionAdmin('documentosCliente', this)">📁 Documentos Clientes</a>
+    <a href="#" onclick="cambiarSeccionAdmin('reportes', this)">📊 Reportes</a>
+    <a href="#" onclick="irAlSitioWeb()">🌐 Ir al sitio web</a>
+  </nav>
+  <div class="sidebar-footer"><button class="btn-salir" onclick="cerrarSesion()">⬅ Cerrar Sesión</button></div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1 id="tituloAdmin">Gestión de <span style="color:var(--naranja)">Proyectos</span></h1>
+      <p id="saludoAdmin">Panel de control general — Centaury S.A.S</p>
+    </div>
+    <span class="badge">ADMIN</span>
+  </div>
+
+  <div id="sec-proyectos" class="seccion-admin activa">
+    <div class="card-admin">
+      <h3>Proyectos Activos y Asignación a Clientes</h3>
+      <div id="contenedorProyectosAdmin"></div>
+      <button onclick="mostrarFormularioProyecto()" style="background:var(--negro); color:var(--blanco); border:none; padding:.6rem 1.2rem; font-weight:600; border-radius:4px; cursor:pointer; font-size:0.85rem; margin-top:1rem;">+ Añadir y Asignar Nuevo Proyecto</button>
+
+      <div id="formProyectoBox" class="form-admin-box">
+        <h4 style="margin-bottom:0.5rem; font-family:'Barlow Condensed'; font-size:1.2rem;" id="tituloFormProy">Registrar y Asignar Proyecto</h4>
+        <input type="hidden" id="editIndexProy" value="">
+        <label style="font-size:0.8rem; font-weight:600;">Nombre:</label><input type="text" id="inputNombreProy" required>
+        <label style="font-size:0.8rem; font-weight:600;">Cliente (Correo):</label><input type="email" id="inputClienteProy" required>
+        <label style="font-size:0.8rem; font-weight:600;">Estado:</label>
+        <select id="selectEstadoProy"><option value="En ejecución">En ejecución</option><option value="En planificación">En planificación</option><option value="Pausado">Pausado</option><option value="Finalizado">Finalizado</option></select>
+        <label style="font-size:0.8rem; font-weight:600;">Avance (%):</label><input type="number" id="inputAvanceProy" min="0" max="100" required>
+        <label style="font-size:0.8rem; font-weight:600;">Descripción:</label><textarea id="inputDescProy" rows="3" required></textarea>
+        <div style="display:flex; gap:10px;"><button onclick="guardarProyectoAdmin()" style="background:var(--verde); color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-weight:600; cursor:pointer;">Guardar</button><button onclick="ocultarFormularioProyecto()" style="background:#888; color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-weight:600; cursor:pointer;">Cancelar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROL DE USUARIOS CON DATOS COMPLETOS VISIBLES -->
+  <div id="sec-usuarios" class="seccion-admin">
+    <div class="card-admin">
+      <h3>Control de Usuarios y Asignación de Roles</h3>
+      <p style="color:#666; font-size:.9rem; margin-bottom:1.5rem;">Haga clic en cualquier usuario para ver sus datos completos detallados:</p>
+      <table style="width:100%; border-collapse:collapse; font-size:.9rem; margin-bottom:1.5rem;" id="tablaUsuarios"></table>
+      <button onclick="mostrarFormularioUsuario()" style="background:var(--negro); color:var(--blanco); border:none; padding:.6rem 1.2rem; font-weight:600; border-radius:4px; cursor:pointer; font-size:0.85rem;">+ Añadir Nuevo Usuario o Rol</button>
+
+      <div id="formUsuarioBox" class="form-admin-box">
+        <h4 style="margin-bottom:0.5rem; font-family:'Barlow Condensed'; font-size:1.2rem;">Registrar Usuario</h4>
+        <input type="hidden" id="editIndex" value="">
+        <label style="font-size:0.8rem; font-weight:600;">Correo:</label><input type="email" id="inputCorreoUser" required>
+        <label style="font-size:0.8rem; font-weight:600;">Rol:</label><select id="selectRolUser"><option value="cliente">Cliente</option><option value="empleado">Empleado</option><option value="asesor">Asesor</option><option value="admin">Administrador</option></select>
+        <div style="display:flex; gap:10px;"><button onclick="guardarUsuarioAdmin()" style="background:var(--verde); color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-weight:600; cursor:pointer;">Guardar</button><button onclick="ocultarFormularioUsuario()" style="background:#888; color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-weight:600; cursor:pointer;">Cancelar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-mensajes" class="seccion-admin">
+    <div class="card-admin">
+      <h3>Bandeja de Mensajes (Chat Directo)</h3>
+      <div id="contenedorMensajes"></div>
+    </div>
+  </div>
+
+  <div id="sec-solicitudes" class="seccion-admin">
+    <div class="card-admin">
+      <h3>Solicitudes e Información Recibidas (Formulario Contáctenos)</h3>
+      <div id="contenedorSolicitudes"></div>
+    </div>
+  </div>
+
+  <div id="sec-servicios" class="seccion-admin">
+    <div class="card-admin">
+      <h3>Administración del Portafolio de Servicios</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:.9rem; margin-bottom:1.5rem;" id="tablaServicios"></table>
+      <button onclick="mostrarFormularioServicio()" style="background:var(--negro); color:var(--blanco); border:none; padding:.6rem 1.2rem; font-weight:600; border-radius:4px; cursor:pointer; font-size:0.85rem;">+ Agregar Nuevo Servicio</button>
+
+      <div id="formServicioBox" class="form-admin-box">
+        <h4 style="margin-bottom:0.5rem; font-family:'Barlow Condensed'; font-size:1.2rem;" id="tituloFormServicio">Gestión de Servicio</h4>
+        <input type="hidden" id="editIndexServicio" value="">
+        <label style="font-size:0.8rem; font-weight:600;">Nombre:</label><input type="text" id="inputNombreServicio" required>
+        <label style="font-size:0.8rem; font-weight:600;">Descripción:</label><input type="text" id="inputDescServicio" required>
+        <div style="display:flex; gap:10px;"><button onclick="guardarServicioAdmin()" style="background:var(--verde); color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-weight:600; cursor:pointer;">Guardar</button><button onclick="ocultarFormularioServicio()" style="background:#888; color:white; border:none; padding:0.5rem 1rem; border-radius:4px; font-weight:600; cursor:pointer;">Cancelar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-documentosCliente" class="seccion-admin">
+    <div class="card-admin">
+      <h3>Supervisión de Documentos y Contratos de Clientes</h3>
+      <div id="contenedorDocsAdmin"></div>
+    </div>
+  </div>
+
+  <div id="sec-reportes" class="seccion-admin">
+    <div class="card-admin">
+      <h3>Generación y Exportación de Reportes Ejecutivos</h3>
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-bottom:1.5rem;">
+        <div style="background:#f9f9f9; padding:1.2rem; border-radius:6px; border-left:4px solid #27ae60;"><h4 style="font-size:0.85rem; color:#888;">Obras Finalizadas</h4><p style="font-size:1.8rem; font-weight:800;">12</p></div>
+        <div style="background:#f9f9f9; padding:1.2rem; border-radius:6px; border-left:4px solid #f39c12;"><h4 style="font-size:0.85rem; color:#888;">Obras en Ejecución</h4><p style="font-size:1.8rem; font-weight:800;">3</p></div>
+        <div style="background:#f9f9f9; padding:1.2rem; border-radius:6px; border-left:4px solid #2980b9;"><h4 style="font-size:0.85rem; color:#888;">Presupuesto Global</h4><p style="font-size:1.8rem; font-weight:800;">$4.5B COP</p></div>
+      </div>
+      <div style="display:flex; gap:15px; align-items:center; background:#fafafa; padding:1.5rem; border-radius:6px; border:1px solid #ddd;">
+        <div style="flex:1;">
+          <label style="display:block; font-size:0.8rem; font-weight:600; text-transform:uppercase; margin-bottom:0.4rem;">Formato de Exportación</label>
+          <select id="formatoDescarga" style="width:100%; padding:0.7rem; border:1px solid #ccc; border-radius:4px; font-family:'Inter';">
+            <option value="pdf">Documento Ejecutivo (.pdf)</option>
+            <option value="word">Documento Word (.doc)</option>
+            <option value="excel">Hoja de Cálculo Excel (.xls)</option>
+            <option value="txt">Reporte de Texto Plano (.txt)</option>
+          </select>
+        </div>
+        <button onclick="descargarReporteReal()" style="background:var(--naranja); color:var(--negro); border:none; padding:.8rem 1.8rem; font-weight:700; border-radius:4px; cursor:pointer; margin-top:1.2rem;">📥 Descargar Reporte</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="chatFlotante">
+  <div class="chat-header">
+    <span id="chatTitulo">Chat con Cliente</span>
+    <div><button onclick="minimizarChat()">_</button><button onclick="cerrarChat()">✕</button></div>
+  </div>
+  <div class="chat-cuerpo" id="chatCuerpo"></div>
+  <div class="chat-footer">
+    <input type="text" id="inputMsgChat" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') enviarMensajeChat()">
+    <button onclick="enviarMensajeChat()">Enviar</button>
+  </div>
+</div>
+
+<script>
+  function cambiarSeccionAdmin(nombreSeccion, elementoNav) {
+    document.querySelectorAll('.seccion-admin').forEach(sec => sec.classList.remove('activa'));
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('activo'));
+    document.getElementById('sec-' + nombreSeccion).classList.add('activa');
+    elementoNav.classList.add('activo');
+    const h1Topbar = document.getElementById('tituloAdmin');
+    if(nombreSeccion === 'proyectos') h1Topbar.innerHTML = 'Gestión de <span style="color:var(--naranja)">Proyectos</span>';
+    if(nombreSeccion === 'usuarios') h1Topbar.innerHTML = 'Gestión de <span style="color:var(--naranja)">Usuarios</span>';
+    if(nombreSeccion === 'mensajes') h1Topbar.innerHTML = 'Bandeja de <span style="color:var(--naranja)">Mensajes</span>';
+    if(nombreSeccion === 'solicitudes') h1Topbar.innerHTML = 'Solicitudes e <span style="color:var(--naranja)">Información</span>';
+    if(nombreSeccion === 'servicios') h1Topbar.innerHTML = 'Administración de <span style="color:var(--naranja)">Servicios</span>';
+    if(nombreSeccion === 'documentosCliente') h1Topbar.innerHTML = 'Supervisión de <span style="color:var(--naranja)">Documentos</span>';
+    if(nombreSeccion === 'reportes') h1Topbar.innerHTML = 'Reportes y <span style="color:var(--naranja)">Estadísticas</span>';
+  }
+
+  function cargarProyectosAdmin() {
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos"));
+    if (!lista || lista.length === 0) {
+      lista = [
+        {nombre: "Torre Empresarial Norte", cliente: "alaska@gmail.com", estado: "En ejecución", avance: 68, desc: "Proyecto de 15 pisos con oficinas corporativas y sótano vehicular."},
+        {nombre: "Bodega Industrial Zona Franca", cliente: "logistica@gmail.com", estado: "En ejecución", avance: 82, desc: "Bodega logística de gran capacidad con estructura metálica."},
+        {nombre: "Conjunto Residencial El Pino", cliente: "inmobiliaria@gmail.com", estado: "En planificación", avance: 15, desc: "Urbanización de interés social con 4 torres residenciales."}
+      ];
+      localStorage.setItem("centaury_proyectos", JSON.stringify(lista));
+    }
+
+    const contenedor = document.getElementById("contenedorProyectosAdmin");
+    let html = "";
+    lista.forEach((p, idx) => {
+      html += `
+        <div class="proyecto-item-card">
+          <div>
+            <h4 style="font-family:'Barlow Condensed'; font-size:1.2rem;">🏗️ ${p.nombre}</h4>
+            <p style="font-size:0.85rem; color:#666;">Cliente: ${p.cliente} | Estado: <strong>${p.estado}</strong> (${p.avance}%)</p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button onclick="editarProyecto(${idx})" style="background:#3498db; color:white; border:none; padding:4px 10px; border-radius:3px; cursor:pointer;">Editar</button>
+            <button onclick="eliminarProyecto(${idx})" style="background:var(--rojo); color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Eliminar</button>
+          </div>
+        </div>
+      `;
+    });
+    contenedor.innerHTML = html;
+  }
+  function mostrarFormularioProyecto() { document.getElementById("formProyectoBox").style.display = "block"; }
+  function ocultarFormularioProyecto() { document.getElementById("formProyectoBox").style.display = "none"; }
+  function guardarProyectoAdmin() {
+    const nombre = document.getElementById("inputNombreProy").value.trim();
+    const cliente = document.getElementById("inputClienteProy").value.trim().toLowerCase();
+    const estado = document.getElementById("selectEstadoProy").value;
+    const avance = parseInt(document.getElementById("inputAvanceProy").value);
+    const desc = document.getElementById("inputDescProy").value.trim();
+    const editIdx = document.getElementById("editIndexProy").value;
+    if(!nombre || !cliente || isNaN(avance) || !desc) return;
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos")) || [];
+    if (editIdx === "") lista.push({ nombre, cliente, estado, avance, desc });
+    else lista[editIdx] = { nombre, cliente, estado, avance, desc };
+    localStorage.setItem("centaury_proyectos", JSON.stringify(lista));
+    ocultarFormularioProyecto(); cargarProyectosAdmin(); alert("¡Proyecto guardado!");
+  }
+  function editarProyecto(idx) {
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos")) || [];
+    let p = lista[idx];
+    document.getElementById("formProyectoBox").style.display = "block";
+    document.getElementById("inputNombreProy").value = p.nombre;
+    document.getElementById("inputClienteProy").value = p.cliente;
+    document.getElementById("selectEstadoProy").value = p.estado;
+    document.getElementById("inputAvanceProy").value = p.avance;
+    document.getElementById("inputDescProy").value = p.desc;
+    document.getElementById("editIndexProy").value = idx;
+  }
+  function eliminarProyecto(idx) {
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos")) || [];
+    if (confirm("¿Eliminar proyecto?")) { lista.splice(idx, 1); localStorage.setItem("centaury_proyectos", JSON.stringify(lista)); cargarProyectosAdmin(); }
+  }
+
+  // CARGAR USUARIOS CON NOMBRES Y CELULARES REGISTRADOS VISIBLES
+  function cargarUsuariosAdmin() {
+    let lista = JSON.parse(localStorage.getItem("centaury_usuarios")) || [
+      {email: "admin@centaury.com", rol: "admin"},
+      {email: "empleado@centaury.com", rol: "empleado"},
+      {email: "asesor@asesorcentaury.com", rol: "asesor"},
+      {email: "alaska@gmail.com", rol: "cliente", nombres: "Alaska Perez", celular: "3001234567"}
+    ];
+    const tabla = document.getElementById("tablaUsuarios");
+    let html = `<tr style="border-bottom:2px solid #eee; text-align:left;"><th style="padding:10px;">Cliente / Usuario</th><th style="padding:10px;">Celular</th><th style="padding:10px;">Rol</th><th style="padding:10px;">Acciones</th></tr>`;
+    
+    lista.forEach((u, index) => {
+      let nombreMostrado = u.nombres ? u.nombres : (u.email.split('@')[0]);
+      let celularMostrado = u.celular ? u.celular : 'No registrado';
+      
+      html += `
+        <tr style="border-bottom:1px solid #eee; cursor:pointer;" onclick="verDetalleUsuario('${u.email}')">
+          <td style="padding:10px; font-weight:600;">${u.email}<br><span style="font-size:0.75rem; color:#666; font-weight:normal;">Nombre: ${nombreMostrado}</span></td>
+          <td style="padding:10px; color:#555;">${celularMostrado}</td>
+          <td style="padding:10px; text-transform:uppercase; font-weight:600;">${u.rol}</td>
+          <td style="padding:10px; display:flex; gap:6px;">
+            <button onclick="event.stopPropagation(); editarUsuario(${index})" style="background:#3498db; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Editar</button>
+            <button onclick="event.stopPropagation(); eliminarUsuario(${index})" style="background:var(--rojo); color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Eliminar</button>
+          </td>
+        </tr>
+      `;
+    });
+    tabla.innerHTML = html;
+  }
+
+  function verDetalleUsuario(correo) {
+    let lista = JSON.parse(localStorage.getItem("centaury_usuarios")) || [];
+    let u = lista.find(x => x.email === correo);
+    if(u) alert(`DATOS COMPLETOS DEL USUARIO:\n\n• Correo: ${u.email}\n• Rol: ${u.rol.toUpperCase()}\n• Nombres y Apellidos: ${u.nombres || 'No registrado'}\n• Número de Celular: ${u.celular || 'No registrado'}`);
+  }
+
+  function mostrarFormularioUsuario() { document.getElementById("formUsuarioBox").style.display = "block"; document.getElementById("inputCorreoUser").value = ""; document.getElementById("editIndex").value = ""; }
+  function ocultarFormularioUsuario() { document.getElementById("formUsuarioBox").style.display = "none"; }
+  function guardarUsuarioAdmin() {
+    const correo = document.getElementById("inputCorreoUser").value.trim().toLowerCase();
+    const rol = document.getElementById("selectRolUser").value;
+    const editIdx = document.getElementById("editIndex").value;
+    if(!correo) return;
+    let lista = JSON.parse(localStorage.getItem("centaury_usuarios")) || [];
+    if (editIdx === "") lista.push({ email: correo, rol: rol });
+    else { lista[editIdx].email = correo; lista[editIdx].rol = rol; }
+    localStorage.setItem("centaury_usuarios", JSON.stringify(lista));
+    ocultarFormularioUsuario(); cargarUsuariosAdmin(); alert("¡Usuario guardado!");
+  }
+  function editarUsuario(index) {
+    let lista = JSON.parse(localStorage.getItem("centaury_usuarios")) || [];
+    document.getElementById("formUsuarioBox").style.display = "block";
+    document.getElementById("inputCorreoUser").value = lista[index].email;
+    document.getElementById("selectRolUser").value = lista[index].rol;
+    document.getElementById("editIndex").value = index;
+  }
+  function eliminarUsuario(index) {
+    let lista = JSON.parse(localStorage.getItem("centaury_usuarios")) || [];
+    lista.splice(index, 1); localStorage.setItem("centaury_usuarios", JSON.stringify(lista)); cargarUsuariosAdmin();
+  }
+
+  function cargarServiciosAdmin() {
+    let lista = JSON.parse(localStorage.getItem("centaury_servicios")) || [
+      {nombre: "Ejecución de Obras", desc: "Construcción civil con control de calidad."},
+      {nombre: "Diseño & Planificación", desc: "Diseños estructurales y operativos."},
+      {nombre: "Interventoría Técnica", desc: "Supervisión y control de normativas."}
+    ];
+    const tabla = document.getElementById("tablaServicios");
+    let html = `<tr style="border-bottom:2px solid #eee; text-align:left;"><th style="padding:10px;">Servicio</th><th style="padding:10px;">Descripción</th><th style="padding:10px;">Acciones</th></tr>`;
+    lista.forEach((s, idx) => {
+      html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px; font-weight:600;">${s.nombre}</td><td style="padding:10px; color:#666;">${s.desc}</td><td style="padding:10px; display:flex; gap:6px;"><button onclick="editarServicio(${idx})" style="background:#3498db; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Editar</button><button onclick="eliminarServicio(${idx})" style="background:var(--rojo); color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">Eliminar</button></td></tr>`;
+    });
+    tabla.innerHTML = html;
+  }
+  function mostrarFormularioServicio() { document.getElementById("formServicioBox").style.display = "block"; document.getElementById("inputNombreServicio").value = ""; document.getElementById("inputDescServicio").value = ""; document.getElementById("editIndexServicio").value = ""; }
+  function ocultarFormularioServicio() { document.getElementById("formServicioBox").style.display = "none"; }
+  function guardarServicioAdmin() {
+    const nombre = document.getElementById("inputNombreServicio").value.trim();
+    const desc = document.getElementById("inputDescServicio").value.trim();
+    const editIdx = document.getElementById("editIndexServicio").value;
+    if(!nombre || !desc) return;
+    let lista = JSON.parse(localStorage.getItem("centaury_servicios")) || [];
+    if (editIdx === "") lista.push({ nombre, desc });
+    else lista[editIdx] = { nombre, desc };
+    localStorage.setItem("centaury_servicios", JSON.stringify(lista));
+    ocultarFormularioServicio(); cargarServiciosAdmin(); alert("¡Servicio guardado!");
+  }
+  function editarServicio(idx) {
+    let lista = JSON.parse(localStorage.getItem("centaury_servicios")) || [];
+    let s = lista[idx];
+    document.getElementById("formServicioBox").style.display = "block";
+    document.getElementById("inputNombreServicio").value = s.nombre;
+    document.getElementById("inputDescServicio").value = s.desc;
+    document.getElementById("editIndexServicio").value = idx;
+  }
+  function eliminarServicio(idx) {
+    let lista = JSON.parse(localStorage.getItem("centaury_servicios")) || [];
+    if (confirm("¿Eliminar servicio?")) { lista.splice(idx, 1); localStorage.setItem("centaury_servicios", JSON.stringify(lista)); cargarServiciosAdmin(); }
+  }
+
+  function cargarDocumentosAdminGeneral() {
+    const contenedor = document.getElementById("contenedorDocsAdmin");
+    let usuarios = JSON.parse(localStorage.getItem("centaury_usuarios")) || [];
+    let html = "";
+    let totalDocs = 0;
+    usuarios.forEach(u => {
+      if(u.rol === 'cliente') {
+        let docsCliente = JSON.parse(localStorage.getItem("docs_" + u.email)) || [];
+        docsCliente.forEach(d => {
+          totalDocs++;
+          html += `<div class="proyecto-item-card"><div><strong>👤 Cliente: ${u.email}</strong><br><span>📄 ${d.tipo} — <em>${d.nombre}</em> (${d.fecha})</span></div><button onclick="descargarDocAdmin('${d.nombre}', '${u.email}')" style="background:var(--verde); color:white; border:none; padding:5px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Descargar Archivo</button></div>`;
+        });
+      }
+    });
+    if (totalDocs === 0) contenedor.innerHTML = `<p style="color:#888; font-style:italic;">No hay documentos cargados por los clientes.</p>`;
+    else contenedor.innerHTML = html;
+  }
+  function descargarDocAdmin(nombre, correo) {
+    const contenido = `DOCUMENTO CLIENTE: ${correo}\nArchivo: ${nombre}\n[Verificado por Administración Centaury S.A.S]`;
+    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  function descargarReporteReal() {
+    const formato = document.getElementById("formatoDescarga").value;
+    const contenido = `==================================================\n   CENTAURY S.A.S — REPORTE EJECUTIVO OFICIAL\n==================================================\nFecha: ${new Date().toLocaleString()}\n\n1. Obras Finalizadas: 12\n2. Obras en Ejecución: 3\n3. Presupuesto Global: $4.5B COP\n\n[Informe verificado por la administración central]`;
+    let ext = "txt", mime = "text/plain;charset=utf-8";
+    if (formato === 'word') { ext = "doc"; mime = "application/msword"; }
+    else if (formato === 'excel') { ext = "xls"; mime = "application/vnd.ms-excel"; }
+    else if (formato === 'pdf') { ext = "pdf"; mime = "application/pdf"; }
+    const blob = new Blob([contenido], { type: mime });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `Reporte_Centaury.${ext}`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  let clienteActivoChat = "";
+  function abrirChat(correoCliente, nombreCliente) {
+    clienteActivoChat = correoCliente;
+    document.getElementById("chatTitulo").textContent = `Chat con ${nombreCliente}`;
+    document.getElementById("chatFlotante").style.display = "flex";
+    cargarMensajesChat();
+  }
+  function cerrarChat() { document.getElementById("chatFlotante").style.display = "none"; }
+  function minimizarChat() { const c = document.getElementById("chatCuerpo"); c.style.display = c.style.display === "none" ? "flex" : "none"; }
+  function cargarMensajesChat() {
+    const cuerpo = document.getElementById("chatCuerpo");
+    let historial = JSON.parse(localStorage.getItem("chat_" + clienteActivoChat)) || [{ remitente: "cliente", texto: "Hola, necesito asistencia." }];
+    let html = "";
+    historial.forEach(m => {
+      let clase = m.remitente === "admin" ? "msg-admin" : "msg-cliente";
+      html += `<div class="msg-chat ${clase}"><strong>${m.remitente === "admin" ? "Admin" : "Cliente"}:</strong> ${m.texto}</div>`;
+    });
+    cuerpo.innerHTML = html; cuerpo.scrollTop = cuerpo.scrollHeight;
+  }
+  function enviarMensajeChat() {
+    const input = document.getElementById("inputMsgChat");
+    const texto = input.value.trim();
+    if(!texto || !clienteActivoChat) return;
+    let historial = JSON.parse(localStorage.getItem("chat_" + clienteActivoChat)) || [];
+    historial.push({ remitente: "admin", texto: texto });
+    localStorage.setItem("chat_" + clienteActivoChat, JSON.stringify(historial));
+    input.value = ""; cargarMensajesChat();
+  }
+
+  function cargarMensajesAdmin() {
+    const mensajesGuardados = JSON.parse(localStorage.getItem("centaury_mensajes")) || [];
+    const contenedor = document.getElementById("contenedorMensajes");
+    document.getElementById("badgeMensajes").textContent = mensajesGuardados.length;
+    if (mensajesGuardados.length === 0) { contenedor.innerHTML = `<p style="color:#888; font-style:italic;">No hay mensajes nuevos.</p>`; return; }
+    let html = "";
+    mensajesGuardados.forEach((m, index) => {
+      html += `<div class="mensaje-item"><h4>👤 ${m.nombre} (${m.empresa})</h4><p><strong>Correo:</strong> ${m.email} | <strong>Teléfono:</strong> ${m.telefono}</p><p><strong>Servicio:</strong> ${m.servicio}</p><p><strong>Mensaje:</strong> "${m.mensaje}"</p><div style="display:flex; gap:10px; margin-top:0.75rem;"><button onclick="abrirChat('${m.email}', '${m.nombre}')" class="btn-responder">💬 Abrir Chat</button><button onclick="eliminarMensaje(${index})" class="btn-eliminar">🗑️ Eliminar</button></div></div>`;
+    });
+    contenedor.innerHTML = html;
+  }
+  function eliminarMensaje(index) {
+    let m = JSON.parse(localStorage.getItem("centaury_mensajes")) || [];
+    m.splice(index, 1); localStorage.setItem("centaury_mensajes", JSON.stringify(m)); cargarMensajesAdmin();
+  }
+
+  function cargarSolicitudesAdmin() {
+    const solicitudes = JSON.parse(localStorage.getItem("centaury_solicitudes_contacto")) || [];
+    const contenedor = document.getElementById("contenedorSolicitudes");
+    document.getElementById("badgeSolicitudes").textContent = solicitudes.length;
+
+    if (solicitudes.length === 0) {
+      contenedor.innerHTML = `<p style="color:#888; font-style:italic;">No hay solicitudes registradas desde Contáctenos.</p>`;
+      return;
+    }
+
+    let html = "";
+    solicitudes.forEach((s, index) => {
+      let telLimpio = s.telefono.replace(/\D/g, '');
+      if (telLimpio.length === 10) telLimpio = "57" + telLimpio;
+
+      html += `
+        <div class="mensaje-item">
+          <h4>📋 Solicitud de: ${s.nombre} (${s.empresa})</h4>
+          <p><strong>Correo:</strong> ${s.email} | <strong>Teléfono:</strong> ${s.telefono}</p>
+          <p><strong>Servicio Interés:</strong> ${s.servicio}</p>
+          <p><strong>Descripción:</strong> "${s.mensaje}"</p>
+          <span style="font-size:0.75rem; color:#888; display:block; margin-top:5px;">Recibido el: ${s.fecha}</span>
+          <div style="display:flex; gap:10px; margin-top:0.75rem; flex-wrap:wrap;">
+            <a href="mailto:${s.email}?subject=Respuesta a su solicitud - Centaury S.A.S&body=Hola ${s.nombre}, nos ponemos en contacto con usted desde Centaury S.A.S respecto a su interés en ${s.servicio}." style="text-decoration:none; padding: 0.4rem 1rem; background:#27ae60; color:white; border-radius:4px; font-size:0.8rem; font-weight:600;">📧 Responder por Correo</a>
+            <a href="https://wa.me/${telLimpio}?text=Hola%20${encodeURIComponent(s.nombre)},%20nos%20comunicamos%20de%20Centaury%20S.A.S%20respecto%20a%20su%20solicitud%20de%20${encodeURIComponent(s.servicio)}." target="_blank" style="text-decoration:none; padding: 0.4rem 1rem; background:#25D366; color:white; border-radius:4px; font-size:0.8rem; font-weight:600;">💬 Responder por WhatsApp</a>
+            <button onclick="eliminarSolicitud(${index})" class="btn-eliminar">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `;
+    });
+    contenedor.innerHTML = html;
+  }
+  function eliminarSolicitud(index) {
+    let solicitudes = JSON.parse(localStorage.getItem("centaury_solicitudes_contacto")) || [];
+    solicitudes.splice(index, 1);
+    localStorage.setItem("centaury_solicitudes_contacto", JSON.stringify(solicitudes));
+    cargarSolicitudesAdmin();
+  }
+
+  function irAlSitioWeb() { window.location.href = "../index.html?sesion=activa"; }
+  function cerrarSesion() { sessionStorage.clear(); window.location.href = '../index.html'; }
+
+  window.onload = function() { cargarProyectosAdmin(); cargarUsuariosAdmin(); cargarServiciosAdmin(); cargarDocumentosAdminGeneral(); cargarMensajesAdmin(); cargarSolicitudesAdmin(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Empleado / Asesor | Centaury S.A.S</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--negro:#1a1a1a;--naranja:#f39c12;--blanco:#fff;--gris:#f4f4f4;--verde:#27ae60;--rojo:#e74c3c;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--gris);color:var(--negro);}
+    .sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--negro);border-right:2px solid var(--naranja);display:flex;flex-direction:column;z-index:100;}
+    .sidebar-logo{padding:1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--blanco);letter-spacing:2px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .sidebar-logo span{color:var(--naranja);}
+    .sidebar-rol{padding:.75rem 1.5rem;background:rgba(243,156,18,.1);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);font-weight:600;}
+    .sidebar nav{padding:1rem 0;flex:1;}
+    .sidebar nav a{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;color:#aaa;font-size:.875rem;text-decoration:none;transition:.2s;cursor:pointer;}
+    .sidebar nav a:hover,.sidebar nav a.activo{background:rgba(243,156,18,.1);color:var(--naranja);}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);}
+    .btn-salir{width:100%;background:var(--rojo);color:var(--blanco);border:none;padding:.6rem;border-radius:4px;cursor:pointer;font-size:.8rem;font-weight:600;}
+    .main{margin-left:240px;padding:2rem;}
+    .topbar{background:var(--blanco);padding:1rem 1.5rem;border-radius:6px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;}
+    .badge{background:var(--verde);color:var(--blanco);padding:.25rem .75rem;border-radius:20px;font-size:.75rem;font-weight:700;}
+    
+    .seccion-empleado { display: none; }
+    .seccion-empleado.activa { display: block; }
+    .card-empleado { background: var(--blanco); padding: 2rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.06); max-width: 800px; }
+    
+    .proyecto-item-card { background: #fafafa; border: 1px solid #e5e5e5; border-left: 5px solid var(--naranja); padding: 1.2rem; border-radius: 6px; margin-bottom: 1rem; }
+    .cronograma-item { background: #fafafa; border: 1px solid #ddd; padding: 1.2rem; border-radius: 6px; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+    .mensaje-item { background: #f9f9f9; border-left: 4px solid var(--naranja); padding: 1.2rem; border-radius: 4px; margin-bottom: 1rem; }
+    .btn-responder { background: #27ae60; color: white; border: none; padding: 0.4rem 1rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .contador-badge { background: var(--rojo); color: white; padding: 0.1rem 0.5rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+
+    #chatFlotante { position: fixed; bottom: 20px; right: 20px; width: 340px; background: white; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); border: 1px solid #ddd; z-index: 1000; display: none; flex-direction: column; overflow: hidden; }
+    .chat-header { background: var(--negro); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 700; }
+    .chat-header button { background: none; border: none; color: white; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
+    .chat-cuerpo { height: 220px; padding: 10px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; }
+    .chat-footer { padding: 10px; display: flex; gap: 5px; background: white; border-top: 1px solid #eee; }
+    .chat-footer input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+    .chat-footer button { background: var(--naranja); color: var(--negro); border: none; padding: 6px 12px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+    .msg-chat { padding: 6px 10px; border-radius: 6px; max-width: 80%; }
+    .msg-admin { background: #e1f5fe; align-self: flex-end; text-align: right; }
+    .msg-cliente { background: #e8f5e9; align-self: flex-start; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">CENT<span>AUR</span>Y</div>
+  <div class="sidebar-rol" id="rolSidebarLbl">👷 Empleado / Asesor</div>
+  <nav>
+    <a href="#" onclick="cambiarSeccionEmpleado('proyectos', this)" class="activo">📋 Mis Proyectos</a>
+    <a href="#" onclick="cambiarSeccionEmpleado('avance', this)">📝 Registrar Avance</a>
+    <a href="#" onclick="cambiarSeccionEmpleado('cronograma', this)">📅 Mi Cronograma</a>
+    <a href="#" onclick="cambiarSeccionEmpleado('mensajes', this)">✉️ Mensajes Web <span id="badgeEmpleadoMsj" class="contador-badge">0</span></a>
+    <a href="#" onclick="irAlSitioWeb()">🌐 Ir al sitio web</a>
+  </nav>
+  <div class="sidebar-footer"><button class="btn-salir" onclick="cerrarSesion()">⬅ Cerrar Sesión</button></div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1 id="tituloEmpleado">Mis <span style="color:var(--naranja)">Proyectos</span></h1>
+      <p id="saludo">Panel operativo — Centaury S.A.S</p>
+    </div>
+    <span class="badge" id="badgeRolTop">EMPLEADO</span>
+  </div>
+
+  <div id="sec-proyectos" class="seccion-empleado activa">
+    <div class="card-empleado" style="max-width:900px;">
+      <h3>Proyectos Asignados en Campo</h3>
+      <div id="contenedorProyectosEmpleado"></div>
+    </div>
+  </div>
+
+  <!-- REGISTRAR AVANCE DINÁMICO Y SINCRONIZADO -->
+  <div id="sec-avance" class="seccion-empleado">
+    <div class="card-empleado">
+      <h3 style="font-family:'Barlow Condensed'; font-size:1.4rem; margin-bottom:1rem;">Registrar Avance de Obra</h3>
+      <form onsubmit="guardarAvanceEmpleado(event)">
+        <div class="form-grupo">
+          <label>Proyecto</label>
+          <select id="selectProyectoAvance" required style="width:100%; padding:0.7rem; border:1px solid #ccc; border-radius:4px; font-family:'Inter';">
+            <!-- Se llena dinámicamente con los proyectos del localStorage -->
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label>Porcentaje (%)</label>
+          <input type="number" id="inputPorcentajeAvance" min="0" max="100" required style="width:100%; padding:0.7rem; border:1px solid #ccc; border-radius:4px;">
+        </div>
+        <div class="form-grupo">
+          <label>Descripción de Actividades</label>
+          <textarea id="inputDescAvance" rows="3" required style="width:100%; padding:0.7rem; border:1px solid #ccc; border-radius:4px;"></textarea>
+        </div>
+        <button type="submit" style="background:var(--naranja); color:var(--negro); border:none; padding:0.7rem 1.5rem; font-weight:700; border-radius:4px; cursor:pointer;">Guardar Avance</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="sec-cronograma" class="seccion-empleado">
+    <div class="card-empleado" style="max-width:900px;">
+      <h3>Cronograma y Actividades Diarias en Campo</h3>
+      <div class="cronograma-item">
+        <div><strong>📅 Lunes:</strong> Revisión de planos estructurales - Torre Norte<br><span style="font-size:0.8rem; color:#888;">⏱️ Horas ejecutadas: 6 hrs</span></div>
+        <span style="background:var(--verde); color:white; padding:0.3rem 0.8rem; border-radius:15px; font-size:0.78rem;">Completado</span>
+      </div>
+      <div class="cronograma-item">
+        <div><strong>📅 Miércoles:</strong> Supervisión de vaciado de concreto - Bodega<br><span style="font-size:0.8rem; color:#888;">⏱️ Horas ejecutadas: 8 hrs</span></div>
+        <span style="background:var(--naranja); color:white; padding:0.3rem 0.8rem; border-radius:15px; font-size:0.78rem;">En proceso</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-mensajes" class="seccion-empleado">
+    <div class="card-empleado" style="max-width:800px;">
+      <h3>Bandeja de Consultas de Clientes (Soporte / Asesor)</h3>
+      <div id="contenedorMensajesEmpleado"></div>
+    </div>
+  </div>
+</main>
+
+<div id="chatFlotante">
+  <div class="chat-header">
+    <span id="chatTitulo">Chat con Cliente</span>
+    <div><button onclick="minimizarChat()">_</button><button onclick="cerrarChat()">✕</button></div>
+  </div>
+  <div class="chat-cuerpo" id="chatCuerpo"></div>
+  <div class="chat-footer">
+    <input type="text" id="inputMsgChat" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') enviarMensajeChat()">
+    <button onclick="enviarMensajeChat()">Enviar</button>
+  </div>
+</div>
+
+<script>
+  const rolSesionEmp = sessionStorage.getItem('centaury_rol');
+  if (rolSesionEmp !== 'empleado' && rolSesionEmp !== 'asesor') { window.location.href = '../index.html'; }
+  document.getElementById('saludo').textContent = `Panel operativo — ${sessionStorage.getItem('centaury_email')}`;
+  if (rolSesionEmp === 'asesor') {
+    document.getElementById('badgeRolTop').textContent = 'ASESOR';
+    document.getElementById('rolSidebarLbl').textContent = '💬 Asesor de Soporte';
+  }
+
+  function cambiarSeccionEmpleado(nombreSeccion, elementoNav) {
+    document.querySelectorAll('.seccion-empleado').forEach(sec => sec.classList.remove('activa'));
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('activo'));
+    document.getElementById('sec-' + nombreSeccion).classList.add('activa');
+    elementoNav.classList.add('activo');
+
+    if (nombreSeccion === 'avance') {
+      cargarSelectProyectosAvance();
+    }
+  }
+
+  function cargarProyectosEmpleado() {
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos"));
+    if (!lista || lista.length === 0) {
+      lista = [
+        {nombre: "Torre Empresarial Norte", cliente: "alaska@gmail.com", estado: "En ejecución", avance: 68, desc: "Proyecto de 15 pisos con oficinas corporativas."},
+        {nombre: "Bodega Industrial Zona Franca", cliente: "logistica@gmail.com", estado: "En ejecución", avance: 82, desc: "Bodega logística de gran capacidad."}
+      ];
+      localStorage.setItem("centaury_proyectos", JSON.stringify(lista));
+    }
+
+    const cont = document.getElementById("contenedorProyectosEmpleado");
+    let html = "";
+    lista.forEach(p => {
+      html += `
+        <div class="proyecto-item-card">
+          <h4 style="font-family:'Barlow Condensed'; font-size:1.2rem;">🏗️ ${p.nombre}</h4>
+          <p style="font-size:0.85rem; color:#666; margin-top:4px;">Cliente: ${p.cliente} | Estado: <strong>${p.estado}</strong> (${p.avance}%)</p>
+          <p style="font-size:0.8rem; color:#888; margin-top:2px;">${p.desc}</p>
+        </div>
+      `;
+    });
+    cont.innerHTML = html;
+  }
+
+  function cargarSelectProyectosAvance() {
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos")) || [];
+    const select = document.getElementById("selectProyectoAvance");
+    let html = "<option value=''>Seleccione un proyecto...</option>";
+    lista.forEach((p, idx) => {
+      html += `<option value="${idx}">${p.nombre} (Actual: ${p.avance}%)</option>`;
+    });
+    select.innerHTML = html;
+  }
+
+  function guardarAvanceEmpleado(e) {
+    e.preventDefault();
+    const idx = document.getElementById("selectProyectoAvance").value;
+    const nuevoAvance = parseInt(document.getElementById("inputPorcentajeAvance").value);
+    const descExtra = document.getElementById("inputDescAvance").value.trim();
+
+    if (idx === "" || isNaN(nuevoAvance)) return;
+
+    let lista = JSON.parse(localStorage.getItem("centaury_proyectos")) || [];
+    if (lista[idx]) {
+      lista[idx].avance = nuevoAvance;
+      lista[idx].desc += ` | Avance actualizado: ${descExtra}`;
+      localStorage.setItem("centaury_proyectos", JSON.stringify(lista));
+      alert("✅ ¡Avance de obra registrado y sincronizado con éxito!");
+      cargarProyectosEmpleado();
+      e.target.reset();
+    }
+  }
+
+  let clienteActivoChat = "";
+  function abrirChat(correoCliente, nombreCliente) {
+    clienteActivoChat = correoCliente;
+    document.getElementById("chatTitulo").textContent = `Chat con ${nombreCliente}`;
+    document.getElementById("chatFlotante").style.display = "flex";
+    cargarMensajesChat();
+  }
+  function cerrarChat() { document.getElementById("chatFlotante").style.display = "none"; }
+  function minimizarChat() { const c = document.getElementById("chatCuerpo"); c.style.display = c.style.display === "none" ? "flex" : "none"; }
+  function cargarMensajesChat() {
+    const cuerpo = document.getElementById("chatCuerpo");
+    let historial = JSON.parse(localStorage.getItem("chat_" + clienteActivoChat)) || [];
+    let html = "";
+    historial.forEach(m => {
+      let clase = (m.remitente === "empleado" || m.remitente === "asesor") ? "msg-admin" : "msg-cliente";
+      html += `<div class="msg-chat ${clase}"><strong>${m.remitente === "cliente" ? "Cliente" : "Soporte"}:</strong> ${m.texto}</div>`;
+    });
+    cuerpo.innerHTML = html; cuerpo.scrollTop = cuerpo.scrollHeight;
+  }
+  function enviarMensajeChat() {
+    const input = document.getElementById("inputMsgChat");
+    const texto = input.value.trim();
+    if(!texto || !clienteActivoChat) return;
+    let historial = JSON.parse(localStorage.getItem("chat_" + clienteActivoChat)) || [];
+    historial.push({ remitente: rolSesionEmp, texto: texto });
+    localStorage.setItem("chat_" + clienteActivoChat, JSON.stringify(historial));
+    input.value = ""; cargarMensajesChat();
+  }
+
+  function cargarMensajesEmpleado() {
+    let mensajesGuardados = JSON.parse(localStorage.getItem("centaury_mensajes")) || [];
+    let usuarios = JSON.parse(localStorage.getItem("centaury_usuarios")) || [];
+    usuarios.forEach(u => {
+      if(u.rol === 'cliente') {
+        let chatCliente = JSON.parse(localStorage.getItem("chat_" + u.email));
+        if(chatCliente && chatCliente.length > 0) {
+          let ultimoMsg = chatCliente[chatCliente.length - 1];
+          if(ultimoMsg.remitente === 'cliente') {
+            let yaExiste = mensajesGuardados.some(m => m.email === u.email && m.mensaje === ultimoMsg.texto);
+            if(!yaExiste) {
+              mensajesGuardados.unshift({
+                nombre: u.nombres || u.email.split('@')[0],
+                empresa: "Portal Cliente",
+                email: u.email,
+                telefono: u.celular || "N/A",
+                servicio: "Soporte en Línea",
+                mensaje: ultimoMsg.texto,
+                fecha: new Date().toLocaleString()
+              });
+            }
+          }
+        }
+      }
+    });
+    localStorage.setItem("centaury_mensajes", JSON.stringify(mensajesGuardados));
+
+    const contenedor = document.getElementById("contenedorMensajesEmpleado");
+    document.getElementById("badgeEmpleadoMsj").textContent = mensajesGuardados.length;
+    if (mensajesGuardados.length === 0) { contenedor.innerHTML = `<p style="color:#888; font-style:italic;">No hay mensajes nuevos.</p>`; return; }
+    let html = "";
+    mensajesGuardados.forEach((m) => {
+      html += `<div class="mensaje-item"><h4>👤 ${m.nombre} (${m.empresa})</h4><p><strong>Correo:</strong> ${m.email} | <strong>Teléfono:</strong> ${m.telefono}</p><p><strong>Mensaje:</strong> "${m.mensaje}"</p><div style="display:flex; gap:10px; margin-top:0.75rem;"><button onclick="abrirChat('${m.email}', '${m.nombre}')" class="btn-responder">💬 Abrir Chat</button></div></div>`;
+    });
+    contenedor.innerHTML = html;
+  }
+
+  function irAlSitioWeb() { window.location.href = "../index.html?sesion=activa"; }
+  function cerrarSesion(){ sessionStorage.clear(); window.location.href='../index.html'; }
+  window.onload = function() { cargarProyectosEmpleado(); cargarMensajesEmpleado(); cargarSelectProyectosAvance(); setInterval(cargarMensajesEmpleado, 3000); };
+</script>
+</body>
+</html>

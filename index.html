@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Centaury S.A.S - Soluciones constructivas integrales. Ingeniería civil, consultoría y ejecución de proyectos en Bogotá, Colombia.">
+  <title>Centaury S.A.S | Ingeniería & Construcción</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <style>
+    .sesion-activa-box { display: flex; align-items: center; gap: 8px; }
+    .btn-cerrar-sesion-web { background: transparent; color: #e74c3c; border: 1px solid #e74c3c; padding: 0.35rem 0.8rem; border-radius: 3px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+    .btn-cerrar-sesion-web:hover { background: #e74c3c; color: #fff; }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#inicio" class="logo">CENT<span>AUR</span>Y</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#sobre">Nosotros</a></li>
+      <li><a href="#mision">Misión & Visión</a></li>
+      <li><a href="#valores">Valores</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#contacto" class="btn-nav">Contáctenos</a></li>
+      <li id="contenedorLoginNav"><button class="btn-login" id="btnLogin">Iniciar Sesión</button></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section id="inicio" class="hero">
+  <div class="hero-contenido">
+    <p class="hero-eyebrow">Ingeniería Civil & Construcción</p>
+    <h1 class="hero-titulo">Proyectos que<br><em>Trascienden</em><br>Niveles.</h1>
+    <p class="hero-desc">Soluciones constructivas integrales con precisión técnica, visión estratégica y transparencia operativa en cada etapa del proyecto.</p>
+    <div class="hero-botones">
+      <a href="#servicios" class="btn-primario">Ver Servicios</a>
+      <a href="#contacto" class="btn-secundario">Contáctenos</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">+6</span><span class="stat-label">Años de experiencia en el sector</span></div>
+    <div class="stat"><span class="stat-num">360°</span><span class="stat-label">Visión integral del proceso constructivo</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Transparencia operativa y financiera</span></div>
+  </div>
+</section>
+
+<section id="sobre" class="sobre">
+  <div class="contenedor">
+    <div class="sobre-texto">
+      <span class="eyebrow">¿Quiénes somos?</span>
+      <h2>Sobre <span>Nosotros</span></h2>
+      <div class="linea"></div>
+      <p>Centaury es una firma constructora y consultora líder especializada en la ejecución integral de proyectos de ingeniería civil. Combinamos experiencia técnica avanzada, pensamiento estratégico directivo y un enfoque multidisciplinario riguroso.</p>
+      <p>Nuestra trayectoria avala nuestra capacidad para gestionar desarrollos inmobiliarios e infraestructura compleja, integrando planificación, diseño, construcción, control financiero y supervisión técnica bajo estrictos estándares de calidad.</p>
+    </div>
+    <div class="sobre-tarjeta">
+      <h3>Centaury S.A.S</h3>
+      <span class="nit">NIT: 901930662-4 · Bogotá, Colombia</span>
+      <ul>
+        <li>Precisión técnica en cada proceso constructivo</li>
+        <li>Visión estratégica en la toma de decisiones</li>
+        <li>Transparencia operativa y financiera</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="mision" class="mision">
+  <div class="contenedor">
+    <div class="seccion-header">
+      <span class="eyebrow">Nuestro propósito</span>
+      <h2>Misión <span>&</span> Visión</h2>
+      <div class="linea centrada"></div>
+    </div>
+    <div class="mv-grid">
+      <div class="mv-card"><span class="mv-icono">🎯</span><h3>Misión</h3><p>Diseñar, estructurar y ejecutar proyectos de construcción civil con una visión integral que combine la ingeniería aplicada, la gerencia estratégica y el soporte técnico-financiero, garantizando precisión en la planificación, transparencia en la gestión y excelencia absoluta en la ejecución.</p></div>
+      <div class="mv-card"><span class="mv-icono">🔭</span><h3>Visión</h3><p>Convertirnos en el referente técnico y estratégico más confiable de la industria de la construcción nacional, integrando ingeniería de vanguardia, consultoría especializada y ejecución multidisciplinaria para transformar desafíos complejos en soluciones sostenibles.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="valores" class="valores">
+  <div class="contenedor">
+    <div class="seccion-header">
+      <span class="eyebrow">Lo que nos define</span>
+      <h2>Valores <span>Corporativos</span></h2>
+      <div class="linea centrada"></div>
+    </div>
+    <div class="valores-grid" style="grid-template-columns: repeat(3, 1fr); display: grid; gap: 2rem;">
+      <div class="valor-card"><span class="valor-num">01</span><h3>Precisión Técnica</h3><p>Ingeniería rigurosa y control de calidad exhaustivo que evita reprocesos.</p></div>
+      <div class="valor-card"><span class="valor-num">02</span><h3>Pensamiento Estratégico</h3><p>Anticipamos escenarios y evaluamos riesgos para valor a largo plazo.</p></div>
+      <div class="valor-card"><span class="valor-num">03</span><h3>Integridad Operativa</h3><p>Gestionamos con absoluta transparencia cada etapa del proyecto. La ética es nuestro cimiento.</p></div>
+      <div class="valor-card"><span class="valor-num">04</span><h3>Adaptabilidad</h3><p>Nos movemos con agilidad frente a desafíos técnicos sin sacrificar calidad.</p></div>
+      <div class="valor-card"><span class="valor-num">05</span><h3>Sostenibilidad</h3><p>Prácticas constructivas responsables con criterio técnico y ambiental.</p></div>
+      <div class="valor-card"><span class="valor-num">06</span><h3>Excelencia</h3><p>Equipos integrados que trabajan colaborativamente para ofrecer alto impacto.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN NUESTROS SERVICIOS CON LOS 6 MÓDULOS COMPLETOS -->
+<section id="servicios" class="servicios">
+  <div class="contenedor">
+    <div class="seccion-header">
+      <span class="eyebrow">Portafolio Corporativo</span>
+      <h2>Nuestros <span>Servicios</span></h2>
+      <div class="linea centrada"></div>
+    </div>
+    <div class="servicios-grid" style="grid-template-columns: repeat(3, 1fr); display: grid; gap: 2rem;">
+      <div class="servicio-card"><span class="serv-icono">🏗️</span><h3>Ejecución de Obras</h3><p>Construcción con control estricto de calidad, tiempos y costos.</p></div>
+      <div class="servicio-card"><span class="serv-icono">📐</span><h3>Diseño & Planificación</h3><p>Diseños estructurales alineados con presupuestos inteligentes.</p></div>
+      <div class="servicio-card"><span class="serv-icono">🔍</span><h3>Interventoría Técnica</h3><p>Supervisión independiente para garantizar normativas.</p></div>
+      <div class="servicio-card"><span class="serv-icono">📊</span><h3>Gerencia de Proyectos</h3><p>Planificación estratégica y control financiero integral.</p></div>
+      <div class="servicio-card"><span class="serv-icono">💰</span><h3>Presupuesto & Costos</h3><p>Análisis de Precios Unitarios (APU) para decisiones informadas.</p></div>
+      <div class="servicio-card"><span class="serv-icono">🔧</span><h3>Mantenimiento</h3><p>Programas preventivos enfocados en el ciclo de vida de edificaciones.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SECCIÓN CONTÁCTENOS ESTILIZADA Y CONECTADA AL ADMIN -->
+<section id="contacto" class="contacto">
+  <div class="contenedor contacto-inner" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: center;">
+    <div class="contacto-info" style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 8px; border-left: 4px solid var(--naranja);">
+      <span class="eyebrow">¿Listo para construir?</span>
+      <h2>Contác<span>tenos</span></h2>
+      <div class="linea" style="margin: 1rem 0;"></div>
+      <p style="color: #ccc; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">Nuestro equipo técnico está disponible para analizar sus necesidades y presentar una propuesta integral adaptada a sus objetivos corporativos.</p>
+      
+      <div class="datos" style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+          <span style="font-size: 1.2rem;">📍</span>
+          <div><strong style="display: block; font-size: 0.8rem; color: var(--naranja); text-transform: uppercase;">Dirección</strong><span style="font-size: 0.85rem; color: #ddd;">Kr 8 # 167D-62 of 731, Bogotá, Colombia</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+          <span style="font-size: 1.2rem;">📞</span>
+          <div><strong style="display: block; font-size: 0.8rem; color: var(--naranja); text-transform: uppercase;">Teléfono</strong><span style="font-size: 0.85rem; color: #ddd;">+57 314 452 6825</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+          <span style="font-size: 1.2rem;">✉️</span>
+          <div><strong style="display: block; font-size: 0.8rem; color: var(--naranja); text-transform: uppercase;">Correo Electrónico</strong><span style="font-size: 0.85rem; color: #ddd;">proyectos.centaury@gmail.com</span></div>
+        </div>
+      </div>
+    </div>
+
+    <form class="formulario" id="formulario" style="background: #1e1e1e; padding: 2.5rem; border-radius: 8px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <h3 style="font-family:'Barlow Condensed'; font-size: 1.6rem; margin-bottom: 1.5rem; color: #fff;">Envíenos un Mensaje</h3>
+      <div class="form-fila" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="form-grupo"><label style="font-size: 0.75rem; color: #aaa;">NOMBRE COMPLETO *</label><input type="text" id="nombre" placeholder="Su nombre" required style="width:100%; padding: 0.7rem; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px;"></div>
+        <div class="form-grupo"><label style="font-size: 0.75rem; color: #aaa;">EMPRESA</label><input type="text" id="empresa" placeholder="Su empresa" style="width:100%; padding: 0.7rem; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px;"></div>
+      </div>
+      <div class="form-fila" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 1rem;">
+        <div class="form-grupo"><label style="font-size: 0.75rem; color: #aaa;">CORREO ELECTRÓNICO *</label><input type="email" id="email" placeholder="correo@empresa.com" required style="width:100%; padding: 0.7rem; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px;"></div>
+        <div class="form-grupo"><label style="font-size: 0.75rem; color: #aaa;">TELÉFONO</label><input type="tel" id="telefono" placeholder="+57 300 000 0000" style="width:100%; padding: 0.7rem; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px;"></div>
+      </div>
+      <div class="form-grupo" style="margin-top: 1rem;"><label style="font-size: 0.75rem; color: #aaa;">SERVICIO REQUERIDO</label><select id="servicio" style="width:100%; padding: 0.7rem; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px;"><option>Ejecución de Obras</option><option>Diseño & Planificación</option><option>Interventoría Técnica</option><option>Gerencia de Proyectos</option><option>Presupuesto & Costos</option><option>Mantenimiento</option></select></div>
+      <div class="form-grupo" style="margin-top: 1rem;"><label style="font-size: 0.75rem; color: #aaa;">DESCRIPCIÓN *</label><textarea id="mensaje" rows="4" placeholder="Cuéntenos sobre su proyecto..." required style="width:100%; padding: 0.7rem; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px;"></textarea></div>
+      <button type="submit" class="btn-enviar" style="width: 100%; background: var(--naranja); color: var(--negro); border: none; padding: 0.9rem; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 1.5rem; text-transform: uppercase; font-family: 'Barlow Condensed'; font-size: 1.1rem; letter-spacing: 1px;">Enviar Solicitud →</button>
+      <p class="form-exito" id="formExito" style="display:none; color: var(--verde); margin-top: 1rem; font-weight: 600; text-align: center;">✅ ¡Mensaje enviado con éxito al Administrador!</p>
+    </form>
+  </div>
+</section>
+
+<!-- MODAL LOGIN -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal" style="max-width:460px;">
+    <button class="modal-cerrar" id="cerrarModal">✕</button>
+    <div class="modal-logo">CENT<span>AUR</span>Y</div>
+    <h3 id="modalTitulo">Iniciar Sesión</h3>
+    <p class="modal-sub" id="modalSub">Accede con tu cuenta corporativa</p>
+    
+    <div class="rol-selector" id="rolSelectorBox">
+      <button class="rol-btn activo" data-rol="cliente">👤 Cliente</button>
+      <button class="rol-btn" data-rol="empleado">👷 Empleado / Asesor</button>
+      <button class="rol-btn" data-rol="admin">🔐 Admin</button>
+    </div>
+
+    <form id="formLogin">
+      <div id="camposRegistroExtra" style="display:none;">
+        <div class="form-fila" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-grupo" style="margin-bottom:0.8rem;"><label style="font-size:0.75rem;">Nombres</label><input type="text" id="regNombres"></div>
+          <div class="form-grupo" style="margin-bottom:0.8rem;"><label style="font-size:0.75rem;">Apellidos</label><input type="text" id="regApellidos"></div>
+        </div>
+        <div class="form-grupo" style="margin-bottom:0.8rem;"><label style="font-size:0.75rem;">Celular</label><input type="tel" id="regCelular"></div>
+      </div>
+
+      <div class="form-grupo" style="margin-bottom:0.8rem;"><label style="font-size:0.75rem;">Correo electrónico</label><input type="email" id="loginEmail" required></div>
+      <div class="form-grupo" style="margin-bottom:0.8rem;"><label style="font-size:0.75rem;">Contraseña</label><input type="password" id="loginPass" required></div>
+      <div class="form-grupo" id="campoConfirmPass" style="display:none; margin-bottom:0.8rem;"><label style="font-size:0.75rem;">Confirmar Contraseña</label><input type="password" id="loginPassConfirm"></div>
+
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:1rem; font-size:0.8rem; color:#aaa;">
+        <input type="checkbox" id="verPassword" onclick="togglePassword()"><label for="verPassword" style="cursor:pointer; text-transform:none; font-size:0.8rem;">Mostrar contraseña</label>
+      </div>
+
+      <button type="submit" class="btn-enviar" id="btnLoginAccion">Ingresar →</button>
+    </form>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.2rem; font-size:0.8rem;">
+      <a href="#" id="linkOlvidoPass" style="color:var(--naranja);">¿Olvidaste tu contraseña?</a>
+      <a href="#" id="linkMostrarRegistro" style="color:#ccc;">Regístrate como nuevo</a>
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2026 Centaury S.A.S · Bogotá, Colombia</p></footer>
+<script src="js/main.js"></script>
+</body>
+</html>

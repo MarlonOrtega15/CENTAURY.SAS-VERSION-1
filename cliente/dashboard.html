@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Cliente | Centaury S.A.S</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--negro:#1a1a1a;--naranja:#f39c12;--blanco:#fff;--gris:#f4f4f4;--verde:#27ae60;--rojo:#e74c3c;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Inter',sans-serif;background:var(--gris);color:var(--negro);}
+    .sidebar{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--negro);border-right:2px solid var(--naranja);display:flex;flex-direction:column;z-index:100;}
+    .sidebar-logo{padding:1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--blanco);letter-spacing:2px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .sidebar-logo span{color:var(--naranja);}
+    .sidebar-rol{padding:.75rem 1.5rem;background:rgba(243,156,18,.1);font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);font-weight:600;}
+    .sidebar nav{padding:1rem 0;flex:1;}
+    .sidebar nav a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.5rem;color:#aaa;font-size:.875rem;text-decoration:none;transition:.2s;cursor:pointer;}
+    .sidebar nav a:hover,.sidebar nav a.activo{background:rgba(243,156,18,.1);color:var(--naranja);}
+    .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);}
+    .btn-salir{width:100%;background:var(--rojo);color:var(--blanco);border:none;padding:.6rem;border-radius:4px;cursor:pointer;font-size:.8rem;font-weight:600;}
+    .main{margin-left:240px;padding:2rem;}
+    .topbar{background:var(--blanco);padding:1rem 1.5rem;border-radius:6px;display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .topbar h1{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;}
+    .badge{background:var(--naranja);color:var(--negro);padding:.25rem .75rem;border-radius:20px;font-size:.75rem;font-weight:700;}
+    
+    .seccion-cliente { display: none; }
+    .seccion-cliente.activa { display: block; }
+    .card-cliente { background: var(--blanco); padding: 2rem; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 1.5rem; }
+    .proyecto-card{background:var(--blanco);padding:1.5rem;border-radius:6px;border-left:4px solid var(--naranja);box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .doc-fila { background: #fafafa; border: 1px solid #e5e5e5; padding: 1rem 1.2rem; border-radius: 6px; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+
+    #chatClienteFlotante { position: fixed; bottom: 20px; right: 20px; width: 340px; background: white; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); border: 1px solid #ddd; z-index: 1000; display: flex; flex-direction: column; overflow: hidden; }
+    .chat-header { background: var(--negro); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; font-weight: 700; }
+    .chat-cuerpo { height: 200px; padding: 10px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; }
+    .chat-footer { padding: 10px; display: flex; gap: 5px; background: white; border-top: 1px solid #eee; }
+    .chat-footer input { flex: 1; padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.85rem; }
+    .chat-footer button { background: var(--naranja); color: var(--negro); border: none; padding: 6px 12px; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+    .msg-chat { padding: 6px 10px; border-radius: 6px; max-width: 80%; }
+    .msg-admin { background: #e1f5fe; align-self: flex-start; }
+    .msg-cliente { background: #e8f5e9; align-self: flex-end; text-align: right; }
+    #btnAbrirChatFlotante { position: fixed; bottom: 20px; right: 20px; background: var(--negro); color: var(--naranja); border: 2px solid var(--naranja); padding: 12px 18px; border-radius: 30px; font-weight: 700; cursor: pointer; z-index: 999; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">CENT<span>AUR</span>Y</div>
+  <div class="sidebar-rol">👤 Cliente</div>
+  <nav>
+    <a href="#" onclick="cambiarSeccionCliente('proyectos', this)" class="activo">📋 Mis Proyectos</a>
+    <a href="#" onclick="cambiarSeccionCliente('documentos', this)">📄 Documentos & Archivos</a>
+    <a href="#" onclick="cambiarSeccionCliente('contactar', this)">💬 Contactar & Soporte</a>
+    <a href="#" onclick="irAlSitioWeb()">🌐 Ir al sitio web</a>
+  </nav>
+  <div class="sidebar-footer"><button class="btn-salir" onclick="cerrarSesion()">⬅ Cerrar Sesión</button></div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1 id="tituloCliente">Portal <span style="color:var(--naranja)">Cliente</span></h1>
+      <p id="saludoCliente">Bienvenido a su panel corporativo</p>
+    </div>
+    <span class="badge">CLIENTE</span>
+  </div>
+
+  <div id="sec-proyectos" class="seccion-cliente activa">
+    <div id="contenedorMisProyectos"></div>
+  </div>
+
+  <div id="sec-documentos" class="seccion-cliente">
+    <div class="card-cliente">
+      <h3 style="font-family:'Barlow Condensed'; font-size:1.4rem; margin-bottom:1rem;">Gestión y Visualización de Documentos Adjuntos</h3>
+      <p style="color:#666; font-size:.9rem; margin-bottom:1.5rem;">Suba contratos, cédulas o pólizas. Cada documento se almacenará en orden cronológico hacia abajo.</p>
+      
+      <form onsubmit="subirDocumentoCliente(event)" style="display:flex; flex-direction:column; gap:1rem; max-width:650px; margin-bottom:2rem;">
+        <select id="tipoDocInput" required style="padding:.8rem; border:1px solid #ddd; border-radius:4px;"><option value="">Seleccione tipo...</option><option>Cédula de Ciudadanía</option><option>Contrato de Obra Civil</option><option>Póliza de Cumplimiento</option><option>Adición Presupuestal</option></select>
+        <input type="file" id="archivoInput" required style="padding:.6rem; border:1px solid #ddd; border-radius:4px;">
+        <button type="submit" style="background:var(--naranja); color:var(--negro); border:none; padding:.8rem; font-weight:700; border-radius:4px; cursor:pointer;">Subir Documento</button>
+      </form>
+
+      <h4 style="font-family:'Barlow Condensed'; font-size:1.2rem; margin-bottom:1rem;">📂 Archivos y Documentos Adjuntos en el Sistema</h4>
+      <div id="listaDocumentosAdjuntos"></div>
+    </div>
+  </div>
+
+  <div id="sec-contactar" class="seccion-cliente">
+    <div class="card-cliente">
+      <h3 style="font-family:'Barlow Condensed'; font-size:1.4rem; margin-bottom:1rem;">Centro de Ayuda y Asistencia Directa</h3>
+      <p style="color:#666; font-size:.9rem;">Utilice el chat flotante de soporte ubicado en la parte inferior derecha.</p>
+    </div>
+  </div>
+</main>
+
+<button id="btnAbrirChatFlotante" onclick="reabrirChatCliente()">💬 Abrir Asistencia</button>
+<div id="chatClienteFlotante">
+  <div class="chat-header">
+    <span>💬 Asistencia Centaury S.A.S</span>
+    <div><button onclick="minimizarChatCliente()" style="background:none; border:none; color:white; cursor:pointer;">_</button><button onclick="cerrarChatCliente()" style="background:none; border:none; color:white; cursor:pointer;">✕</button></div>
+  </div>
+  <div class="chat-cuerpo" id="chatCuerpoCliente"></div>
+  <div class="chat-footer" id="chatFooterCliente">
+    <input type="text" id="inputMsgCliente" placeholder="¿Necesitas ayuda con tu obra?..." onkeypress="if(event.key==='Enter') enviarMensajeCliente()">
+    <button onclick="enviarMensajeCliente()">Enviar</button>
+  </div>
+</div>
+
+<script>
+  const rolSesion = sessionStorage.getItem('centaury_rol');
+  const emailSesion = sessionStorage.getItem('centaury_email') || '';
+  if (rolSesion !== 'cliente' || emailSesion.endsWith('@centaury.com')) { window.location.href = '../index.html'; }
+  document.getElementById('saludoCliente').textContent = `Bienvenido — ${emailSesion}`;
+
+  function cargarProyectoCliente() {
+    const contenedor = document.getElementById("contenedorMisProyectos");
+    let listaProyectos = JSON.parse(localStorage.getItem("centaury_proyectos")) || [];
+    
+    // BÚSQUEDA BLINDADA: Compara el correo del cliente normalizado (sin espacios y en minúsculas)
+    let miProyecto = listaProyectos.find(p => p.cliente.toLowerCase().trim() === emailSesion.toLowerCase().trim());
+
+    if (!miProyecto) {
+      contenedor.innerHTML = `<div class="proyecto-card" style="border-left-color: #f39c12;"><h3 style="font-family:'Barlow Condensed'; font-size:1.4rem; margin-bottom:.5rem;">Estado de su Cuenta</h3><span style="display:inline-block; background:rgba(243,156,18,.15); color:#d35400; padding:.3rem .8rem; border-radius:20px; font-size:.78rem; font-weight:700; margin-bottom:.75rem;">⏳ Por confirmar / Sin proyecto asignado aún</span><p style="font-size:.9rem; color:#666; line-height:1.6;">Hola, su cuenta ha sido registrada con éxito. La administración configurará su proyecto próximamente.</p></div>`;
+    } else {
+      contenedor.innerHTML = `<div class="proyecto-card"><h3 style="font-family:'Barlow Condensed'; font-size:1.4rem; margin-bottom:.5rem;">${miProyecto.nombre}</h3><span style="display:inline-block; background:rgba(39,174,96,.12); color:#27ae60; padding:.2rem .6rem; border-radius:20px; font-size:.72rem; font-weight:600; margin-bottom:.75rem;">${miProyecto.estado}</span><p style="font-size:.85rem; color:#666; margin-bottom:.5rem;"><strong>Descripción:</strong> ${miProyecto.desc}</p><div style="background:#eee; border-radius:20px; height:8px; margin:1rem 0 .5rem;"><div style="height:8px; border-radius:20px; background:var(--naranja); width:${miProyecto.avance}%;"></div></div><p style="font-size:.78rem; color:#888;">Avance físico actual: ${miProyecto.avance}% (Solo lectura)</p></div>`;
+    }
+  }
+
+  function subirDocumentoCliente(e) {
+    e.preventDefault();
+    const tipo = document.getElementById("tipoDocInput").value;
+    const archivoInput = document.getElementById("archivoInput");
+    const archivo = archivoInput.files[0];
+    if(!archivo) return;
+
+    let docs = JSON.parse(localStorage.getItem("docs_" + emailSesion)) || [];
+    docs.push({ tipo: tipo, nombre: archivo.name, fecha: new Date().toLocaleString(), cliente: emailSesion });
+    localStorage.setItem("docs_" + emailSesion, JSON.stringify(docs));
+    alert("¡Documento cargado con éxito en el sistema!");
+    cargarDocumentosCliente();
+    e.target.reset();
+  }
+
+  function cargarDocumentosCliente() {
+    const cont = document.getElementById("listaDocumentosAdjuntos");
+    let docs = JSON.parse(localStorage.getItem("docs_" + emailSesion)) || [];
+    if (docs.length === 0) {
+      cont.innerHTML = `<p style="color:#888; font-style:italic;">No hay documentos adjuntos en el sistema.</p>`;
+      return;
+    }
+    let html = "";
+    docs.forEach((d, idx) => {
+      html += `
+        <div class="doc-fila">
+          <div><strong>📄 ${d.tipo}</strong><br><span style="font-size:0.8rem; color:#666;">Archivo: ${d.nombre} (${d.fecha})</span></div>
+          <div style="display:flex; gap:8px;">
+            <button onclick="vistaPreviaDoc('${d.tipo}', '${d.nombre}')" style="background:#3498db; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Vista Previa</button>
+            <button onclick="descargarDoc('${d.nombre}')" style="background:var(--verde); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Descargar</button>
+            <button onclick="eliminarDoc(${idx})" style="background:var(--rojo); color:white; border:none; padding:5px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Eliminar</button>
+          </div>
+        </div>
+      `;
+    });
+    cont.innerHTML = html;
+  }
+
+  function vistaPreviaDoc(tipo, nombre) {
+    alert(`VISTA PREVIA DE DOCUMENTO:\n\n• Tipo: ${tipo}\n• Archivo: ${nombre}\n• Estado: Verificado y aprobado por el sistema central.\n• Propietario: ${emailSesion}`);
+  }
+
+  function descargarDoc(nombre) {
+    const contenido = `DOCUMENTO OFICIAL CENTAURY S.A.S\nArchivo: ${nombre}\nPropietario: ${emailSesion}\nFecha: ${new Date().toLocaleString()}\n[Verificado y autenticado en plataforma]`;
+    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = nombre;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  function eliminarDoc(idx) {
+    let docs = JSON.parse(localStorage.getItem("docs_" + emailSesion)) || [];
+    docs.splice(idx, 1);
+    localStorage.setItem("docs_" + emailSesion, JSON.stringify(docs));
+    cargarDocumentosCliente();
+  }
+
+  function cargarChatCliente() {
+    const cuerpo = document.getElementById("chatCuerpoCliente");
+    let historial = JSON.parse(localStorage.getItem("chat_" + emailSesion)) || [{ remitente: "admin", texto: "¡Hola! Bienvenido a Centaury S.A.S. ¿En qué podemos ayudarte?" }];
+    let html = "";
+    historial.forEach(m => {
+      let clase = m.remitente === "cliente" ? "msg-cliente" : "msg-admin";
+      html += `<div class="msg-chat ${clase}"><strong>${m.remitente === "cliente" ? "Tú" : "Soporte"}:</strong> ${m.texto}</div>`;
+    });
+    cuerpo.innerHTML = html; cuerpo.scrollTop = cuerpo.scrollHeight;
+  }
+
+  function enviarMensajeCliente() {
+    const input = document.getElementById("inputMsgCliente");
+    const texto = input.value.trim();
+    if(!texto) return;
+    let historial = JSON.parse(localStorage.getItem("chat_" + emailSesion)) || [];
+    historial.push({ remitente: "cliente", texto: texto });
+    localStorage.setItem("chat_" + emailSesion, JSON.stringify(historial));
+    input.value = ""; cargarChatCliente();
+  }
+
+  function minimizarChatCliente() {
+    const cuerpo = document.getElementById("chatCuerpoCliente");
+    const footer = document.getElementById("chatFooterCliente");
+    const oculto = cuerpo.style.display === "none";
+    cuerpo.style.display = oculto ? "flex" : "none";
+    footer.style.display = oculto ? "flex" : "none";
+  }
+
+  function cerrarChatCliente() {
+    document.getElementById("chatClienteFlotante").style.display = "none";
+    document.getElementById("btnAbrirChatFlotante").style.display = "block";
+  }
+
+  function reabrirChatCliente() {
+    document.getElementById("chatClienteFlotante").style.display = "flex";
+    document.getElementById("btnAbrirChatFlotante").style.display = "none";
+  }
+
+  function cambiarSeccionCliente(nombre, elemento) {
+    document.querySelectorAll('.seccion-cliente').forEach(sec => sec.classList.remove('activa'));
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('activo'));
+    document.getElementById('sec-' + nombre).classList.add('activa');
+    elemento.classList.add('activo');
+  }
+
+  function irAlSitioWeb() { window.location.href = "../index.html?sesion=activa"; }
+  function cerrarSesion() { sessionStorage.clear(); window.location.href = '../index.html'; }
+
+  window.onload = function() { cargarProyectoCliente(); cargarChatCliente(); cargarDocumentosCliente(); };
+</script>
+</body>
+</html>
