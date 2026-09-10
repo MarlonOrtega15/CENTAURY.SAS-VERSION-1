@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // FORMULARIO DE CONTÁCTENOS CON VALIDACIÓN DE MÍNIMO 10 DÍGITOS EN CELULAR
+    // FORMULARIO DE CONTÁCTENOS CONECTADO AL BACKEND EN RENDER
     const formulario = document.getElementById("formulario");
     const formExito = document.getElementById("formExito");
     if (formulario) {
@@ -205,17 +205,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 email: document.getElementById("email").value.trim(),
                 telefono: telefonoInput,
                 servicio: document.getElementById("servicio").value || "General",
-                mensaje: document.getElementById("mensaje").value.trim(),
-                fecha: new Date().toLocaleString()
+                mensaje: document.getElementById("mensaje").value.trim()
             };
 
-            let solicitudesGuardadas = JSON.parse(localStorage.getItem("centaury_solicitudes_contacto")) || [];
-            solicitudesGuardadas.unshift(nuevaSolicitud);
-            localStorage.setItem("centaury_solicitudes_contacto", JSON.stringify(solicitudesGuardadas));
+            // URL pública de tu backend en Render vinculada directamente al formulario web
+            const API_URL = 'https://centaury-sas-version-1.onrender.com/api/contacto';
 
-            if (formExito) formExito.style.display = "block";
-            formulario.reset();
-            setTimeout(() => { if (formExito) formExito.style.display = "none"; }, 4000);
+            fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nuevaSolicitud)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('¡Solicitud guardada en la nube con éxito!', data);
+                if (formExito) formExito.style.display = "block";
+                formulario.reset();
+                setTimeout(() => { if (formExito) formExito.style.display = "none"; }, 4000);
+            })
+            .catch(error => {
+                console.error('Error al conectar con el servidor:', error);
+                alert("Hubo un error al enviar la solicitud al servidor. Inténtalo de nuevo.");
+            });
         });
     }
 });
